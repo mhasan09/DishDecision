@@ -8,3 +8,8 @@ class AccessTokenSerializer(serializers.Serializer):
 
 class RefreshTokenSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(max_length=255)
+
+
+class CreateRestaurantSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=20)
+    location = serializers.CharField(max_length=20)

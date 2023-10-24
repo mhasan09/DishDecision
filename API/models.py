@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 
-from API.manager import AccessTokenManager
+from API.manager import AccessTokenManager, RestaurantManager
 from applibs.helpers import string_to_datetime
 
 
@@ -24,4 +24,20 @@ class AccessToken(models.Model):
             minutes=parsed_response["expires_in"])
         self.updated_at = timezone.now()
         self.save()
+
+
+class Restaurant(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=20)
+    location = models.CharField(max_length=20)
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    objects = RestaurantManager()
+
+    def __str__(self):
+        return f"{self.name}-{self.location}"
+
 

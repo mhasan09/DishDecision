@@ -21,3 +21,16 @@ class AccessTokenManager(models.Manager):
         except Exception as e:
             logger.debug({"db_exception_errors": repr(e)})
             return None
+
+
+class RestaurantManager(models.Manager):
+    def save_restaurant(self, payload):
+        try:
+            return self.create(
+                name=payload["name"],
+                location=payload["location"],
+            )
+
+        except Exception as e:
+            logger.debug({"payload": payload, "db_exception_error": repr(e)})
+            return None
