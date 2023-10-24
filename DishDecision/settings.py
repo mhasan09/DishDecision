@@ -2,12 +2,17 @@ import os
 import environ
 from pathlib import Path
 from datetime import timedelta
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Set environment configuration
 env = environ.Env(
     DEBUG=(bool, False),
 )
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# reading .env file
+env_file_path = os.path.join(os.getenv("ENV_FILE_PATH", BASE_DIR), '.env')
+
+environ.Env.read_env(env_file_path)
+
 
 SECRET_KEY = env("SECRET_KEY")
 SECRET_KEY_FOR_REFRESH_TOKEN = env("SECRET_KEY_FOR_REFRESH_TOKEN")
@@ -41,7 +46,7 @@ THIRD_PARTY_APPS = [
 # Project apps
 # Add project apps after create new apps with django-admin startapp app_name
 PROJECT_APPS = [
-
+    'API'
 ]
 # Project installed applications
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
