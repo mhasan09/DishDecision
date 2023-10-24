@@ -6,6 +6,6 @@ from API.views.token_view import (
 )
 
 urlpatterns = [
-    path("service/v1/auth/token/", TokenAPIView.as_view(), name="access-token"),
-    path("service/v1/auth/token-refresh/", RefreshTokenAPIView.as_view(), name="access-by-refresh-token"),
+    path("v1/auth/token/", TokenAPIView.as_view(), name="access-token"),
+    path("v1/auth/token-refresh/", RefreshTokenAPIView.as_view(), name="access-by-refresh-token"),
 ]
