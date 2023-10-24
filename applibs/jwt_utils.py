@@ -1,8 +1,14 @@
 import base64
 import json
+import jwt
 
 from django.utils import timezone
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
+from DishDecision.settings import SIMPLE_JWT, SECRET_KEY
+from applibs.logging_utils import get_logger
 
+logger = get_logger(__name__)
 
 def decode_field_from_jwt(token: str, field: str):
     if not token:
@@ -43,3 +49,24 @@ def is_jwt_token_valid(token, expiry_threshold=0):
     now = timezone.now().timestamp()
 
     return now < exp
+
+def get_access_token_data(user: User) -> dict:
+    refresh = RefreshToken.for_user(user)
+    output = {
+        "access_token": str(refresh.access_token),
+        "refresh_token": str(refresh),
+        "access_token_expiry_time": SIMPLE_JWT.get("ACCESS_TOKEN_LIFETIME"),
+        "refresh_token_expiry_time": SIMPLE_JWT.get("REFRESH_TOKEN_LIFETIME")
+    }
+
+    return output
+
+
+def decode_refresh_token(refresh_token) -> dict:
+    try:
+        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=["HS256"])
+        return payload["user_id"]
+
+    except Exception as e:
+        logger.error(repr(e))
+        return None
