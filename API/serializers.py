@@ -13,3 +13,8 @@ class RefreshTokenSerializer(serializers.Serializer):
 class CreateRestaurantSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=20)
     location = serializers.CharField(max_length=20)
+
+
+class UploadMenuSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=30)
+    menu = serializers.CharField(max_length=255)

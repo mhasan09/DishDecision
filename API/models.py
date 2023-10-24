@@ -3,7 +3,9 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 
-from API.manager import AccessTokenManager, RestaurantManager
+from API.manager.menu_manager import MenuManager
+from API.manager.restaurant_manager import RestaurantManager
+from API.manager.token_manager import AccessTokenManager
 from applibs.helpers import string_to_datetime
 
 
@@ -40,4 +42,14 @@ class Restaurant(models.Model):
     def __str__(self):
         return f"{self.name}-{self.location}"
 
+
+class Menu(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='menus')
+    menu = models.TextField()
+
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    objects = MenuManager()
 
