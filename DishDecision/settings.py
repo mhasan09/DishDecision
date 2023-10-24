@@ -88,11 +88,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'cid.middleware.CidMiddleware',
 ]
-
 # DRF Conf start
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'applibs.auth.JWTAuthentication,',
+        'applibs.auth.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         "rest_framework.permissions.IsAuthenticated",
