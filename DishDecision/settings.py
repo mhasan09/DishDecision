@@ -87,7 +87,7 @@ MIDDLEWARE = [
 # DRF Conf start
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'applibs',
+        'applibs.auth.JWTAuthentication,',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         "rest_framework.permissions.IsAuthenticated",
