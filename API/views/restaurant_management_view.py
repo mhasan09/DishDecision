@@ -5,8 +5,8 @@ from rest_framework.response import Response
 
 from applibs.logging_utils import get_logger
 
-from API.models import Restaurant
-from API.serializers import CreateRestaurantSerializer
+from API.models import Restaurant, Menu
+from API.serializers import CreateRestaurantSerializer, UploadMenuSerializer
 
 logger = get_logger(__name__)
 
@@ -38,3 +38,50 @@ class CreateRestaurantAPIView(APIView):
         self.serializer_data = dict(serializer.validated_data)
         output = self.save_restaurant()
         return Response(output)
+
+
+class UploadMenuAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def __init__(self):
+        super(UploadMenuAPIView, self).__init__()
+        self.request = None
+        self.serializer_data = dict()
+        self.serializer_class = UploadMenuSerializer
+        self.restaurant_obj = None
+
+    def get_restaurant(self):
+        self.restaurant_obj = Restaurant.objects.get_restaurant(restaurant_id=self.serializer_data["id"])
+        if not self.restaurant_obj:
+            return status.HTTP_406_NOT_ACCEPTABLE
+        return self.restaurant_obj
+
+    def upload_validity(self):
+        if Restaurant.objects.check_already_uploaded():
+            pass
+
+    def upload_menu(self):
+        self.restaurant_obj = Restaurant.objects.get_restaurant(restaurant_id=self.serializer_data["id"])
+        if self.restaurant_obj:
+            self.serializer_data["id"] = self.restaurant_obj
+            _ = Menu.objects.save_menu(payload=self.serializer_data)
+
+            return status.HTTP_404_NOT_FOUND
+
+
+
+    def process(self):
+        pass  # TODO: on a process it will be done
+
+    def post(self, request):
+        self.request = request
+        serializer = self.serializer_class(data=self.request.data)
+
+        if not serializer.is_valid():
+            logger.debug({"serializer_error": repr(serializer.errors)})
+            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        self.serializer_data = dict(serializer.validated_data)
+        self.process()
+
+
