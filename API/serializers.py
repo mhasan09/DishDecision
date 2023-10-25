@@ -16,5 +16,5 @@ class CreateRestaurantSerializer(serializers.Serializer):
 
 
 class UploadMenuSerializer(serializers.Serializer):
-    id = serializers.CharField(max_length=30)
+    id = serializers.CharField(max_length=55)
     menu = serializers.CharField(max_length=255)
