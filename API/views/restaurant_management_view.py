@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from applibs.helpers import check_time_limit_validity_for_uploading_menu
 from applibs.logging_utils import get_logger
 
-from API.models import Restaurant, Menu, Vote
+from API.models import Restaurant, Menu, Vote, Result
 from API.serializers import (
     CreateRestaurantSerializer,
     UploadMenuSerializer,
@@ -116,10 +116,22 @@ class GetWinnerAPIView(APIView):
     def preprocess_winner_data(self):
         self.response_data = Vote.objects.get_winner()
         winner_data = max(self.response_data, key=lambda d: d['total_vote_count'])
+        self.save_result(winner_data= winner_data)
         menu_name = Menu.objects.get(id=winner_data["vote_for"]).menu
         restaurant_name = Menu.objects.get(id=winner_data["vote_for"]).restaurant.name
         location = Menu.objects.get(id=winner_data["vote_for"]).restaurant.location
         return self.set_response(menu_name, restaurant_name, location)
+
+    @staticmethod
+    def save_result(winner_data):
+        menu_id = Menu.objects.get(id=winner_data["vote_for"])
+        restaurant_id = Menu.objects.get(id=winner_data["vote_for"]).restaurant
+        payload = dict()
+        payload["menu_id"] = menu_id
+        payload["restaurant_id"] = restaurant_id
+        result_saved = Result.objects.save_result(payload=payload)
+        if result_saved:
+            return None
 
     @staticmethod
     def set_response(*args):

@@ -6,6 +6,7 @@ from datetime import timedelta
 from API.manager.employee_manager import EmployeeManager
 from API.manager.menu_manager import MenuManager
 from API.manager.restaurant_manager import RestaurantManager
+from API.manager.result_manager import ResultManager
 from API.manager.token_manager import AccessTokenManager
 from API.manager.vote_manager import VoteManager
 
@@ -82,3 +83,14 @@ class Vote(models.Model):
     updated_at = models.DateTimeField(default=timezone.now)
 
     objects = VoteManager()
+
+
+class Result(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    menu_id = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name='results')
+    restaurant_id = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='results')
+
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    objects = ResultManager()
