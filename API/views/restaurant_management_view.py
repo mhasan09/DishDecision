@@ -82,3 +82,15 @@ class UploadMenuAPIView(APIView):
         self.serializer_data = dict(serializer.validated_data)
         output = self.upload_validity()
         return Response(output)
+
+
+class GetMenuAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @staticmethod
+    def get_menu_for_today():
+        return Menu.objects.get_menu_for_today()
+
+    def get(self, request):
+        output = self.get_menu_for_today()
+        return Response(output)
