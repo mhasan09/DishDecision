@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 
+from API.manager.employee_manager import EmployeeManager
 from API.manager.menu_manager import MenuManager
 from API.manager.restaurant_manager import RestaurantManager
 from API.manager.token_manager import AccessTokenManager
@@ -53,3 +54,18 @@ class Menu(models.Model):
 
     objects = MenuManager()
 
+
+class Employee(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=30)
+    department = models.CharField(max_length=20)
+    designation = models.CharField(max_length=20)
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    objects = EmployeeManager()
+
+    def __str__(self):
+        return f"{self.name}-{self.designation}"
