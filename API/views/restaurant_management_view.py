@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 
-from applibs.helpers import check_time_limit_validity
+from applibs.helpers import check_time_limit_validity_for_uploading_menu
 from applibs.logging_utils import get_logger
 
 from API.models import Restaurant, Menu
@@ -51,7 +51,7 @@ class UploadMenuAPIView(APIView):
         self.serializer_class = UploadMenuSerializer
         self.restaurant_obj = None
 
-    def upload_validity(self):
+    def check_upload_validity(self):
         self.restaurant_obj = Restaurant.objects.get_restaurant(restaurant_id=self.serializer_data["id"])
         if not self.restaurant_obj:
             return status.HTTP_404_NOT_FOUND
@@ -60,7 +60,7 @@ class UploadMenuAPIView(APIView):
         if Menu.objects.check_already_uploaded(payload=self.serializer_data):
             return status.HTTP_406_NOT_ACCEPTABLE
 
-        time_validity = check_time_limit_validity()
+        time_validity = check_time_limit_validity_for_uploading_menu()
         if time_validity:
             self.upload_menu()
         return status.HTTP_406_NOT_ACCEPTABLE
@@ -80,7 +80,7 @@ class UploadMenuAPIView(APIView):
             return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
         self.serializer_data = dict(serializer.validated_data)
-        output = self.upload_validity()
+        output = self.check_upload_validity()
         return Response(output)
 
 
