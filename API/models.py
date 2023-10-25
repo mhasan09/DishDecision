@@ -7,6 +7,8 @@ from API.manager.employee_manager import EmployeeManager
 from API.manager.menu_manager import MenuManager
 from API.manager.restaurant_manager import RestaurantManager
 from API.manager.token_manager import AccessTokenManager
+from API.manager.vote_manager import VoteManager
+
 from applibs.helpers import string_to_datetime
 
 
@@ -69,3 +71,14 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.name}-{self.designation}"
+
+
+class Vote(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    voter_id = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='votes')
+    vote_for = models.ForeignKey(Menu, on_delete=models.CASCADE, related_name='votes')
+
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
+
+    objects = VoteManager()
