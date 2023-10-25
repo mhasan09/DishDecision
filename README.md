@@ -1,8 +1,8 @@
 # DishDecision
 
-## Running with Docker
+### Running with Docker
 
-### Prerequisites
+#### Prerequisites
 
 - Docker installed on your machine.
 
