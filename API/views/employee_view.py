@@ -76,8 +76,10 @@ class CastVoteAPIView(APIView):
         if time_validity:
             is_vote_acceptable = Menu.objects.get_eligible_menu_for_vote()
             if is_vote_acceptable:
-                self.preprocess_vote()
-                return status.HTTP_201_CREATED
+                if self.preprocess_vote() is None:
+                    return status.HTTP_201_CREATED
+                else:
+                    return status.HTTP_406_NOT_ACCEPTABLE
             else:
                 return status.HTTP_406_NOT_ACCEPTABLE
 
