@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from applibs.helpers import check_time_limit_validity_for_uploading_menu
 from applibs.logging_utils import get_logger
 
-from API.models import Restaurant, Menu
+from API.models import Restaurant, Menu, Vote
 from API.serializers import (
     CreateRestaurantSerializer,
     UploadMenuSerializer,
@@ -70,6 +70,7 @@ class UploadMenuAPIView(APIView):
         time_validity = check_time_limit_validity_for_uploading_menu()
         if time_validity:
             self.upload_menu()
+            return status.HTTP_201_CREATED
 
         return status.HTTP_406_NOT_ACCEPTABLE
 
@@ -101,4 +102,33 @@ class GetMenuAPIView(APIView):
 
     def get(self, request):
         output = self.get_menu_for_today()
+        return Response(output)
+
+
+class GetWinnerAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def __init__(self):
+        super(GetWinnerAPIView, self).__init__()
+        self.request = None
+        self.response_data = dict()
+
+    def preprocess_winner_data(self):
+        self.response_data = Vote.objects.get_winner()
+        winner_data = max(self.response_data, key=lambda d: d['total_vote_count'])
+        menu_name = Menu.objects.get(id=winner_data["vote_for"]).menu
+        restaurant_name = Menu.objects.get(id=winner_data["vote_for"]).restaurant.name
+        location = Menu.objects.get(id=winner_data["vote_for"]).restaurant.location
+        return self.set_response(menu_name, restaurant_name, location)
+
+    @staticmethod
+    def set_response(*args):
+        return {
+            "menu": args[0],
+            "restaurant": args[1],
+            "location": args[2],
+        }
+
+    def get(self, request):
+        output = self.preprocess_winner_data()
         return Response(output)
