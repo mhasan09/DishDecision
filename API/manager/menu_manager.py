@@ -32,3 +32,17 @@ class MenuManager(models.Manager):
         except Exception as e:
             logger.debug({"payload": payload, "db_exception_error": repr(e)})
             return None
+
+    def get_menu_for_today(self):
+        try:
+            return list(self.filter(
+                created_at__day=date.today().day
+            ).values(
+                "menu",
+                "restaurant__name",
+                "restaurant__location"
+            ))
+
+        except Exception as e:
+            logger.debug(repr(e))
+            return None
