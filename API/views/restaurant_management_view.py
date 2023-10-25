@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 
+from applibs.helpers import check_time_limit_validity
 from applibs.logging_utils import get_logger
 
 from API.models import Restaurant, Menu
@@ -33,7 +34,7 @@ class CreateRestaurantAPIView(APIView):
 
         if not serializer.is_valid():
             logger.debug({"serializer_error": repr(serializer.errors)})
-            return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response("Invalid data format", status=status.HTTP_406_NOT_ACCEPTABLE)
 
         self.serializer_data = dict(serializer.validated_data)
         output = self.save_restaurant()
@@ -50,28 +51,25 @@ class UploadMenuAPIView(APIView):
         self.serializer_class = UploadMenuSerializer
         self.restaurant_obj = None
 
-    def get_restaurant(self):
+    def upload_validity(self):
         self.restaurant_obj = Restaurant.objects.get_restaurant(restaurant_id=self.serializer_data["id"])
         if not self.restaurant_obj:
-            return status.HTTP_406_NOT_ACCEPTABLE
-        return self.restaurant_obj
-
-    def upload_validity(self):
-        if Restaurant.objects.check_already_uploaded():
-            pass
-
-    def upload_menu(self):
-        self.restaurant_obj = Restaurant.objects.get_restaurant(restaurant_id=self.serializer_data["id"])
-        if self.restaurant_obj:
-            self.serializer_data["id"] = self.restaurant_obj
-            _ = Menu.objects.save_menu(payload=self.serializer_data)
-
             return status.HTTP_404_NOT_FOUND
 
+        self.serializer_data["id"] = self.restaurant_obj
+        if Menu.objects.check_already_uploaded(payload=self.serializer_data):
+            return status.HTTP_406_NOT_ACCEPTABLE
 
+        time_validity = check_time_limit_validity()
+        if time_validity:
+            self.upload_menu()
+        return status.HTTP_406_NOT_ACCEPTABLE
 
-    def process(self):
-        pass  # TODO: on a process it will be done
+    def upload_menu(self):
+        uploaded = Menu.objects.upload_menu(payload=self.serializer_data)
+        if uploaded:
+            return status.HTTP_201_CREATED
+        return status.HTTP_424_FAILED_DEPENDENCY
 
     def post(self, request):
         self.request = request
@@ -82,6 +80,5 @@ class UploadMenuAPIView(APIView):
             return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
         self.serializer_data = dict(serializer.validated_data)
-        self.process()
-
-
+        output = self.upload_validity()
+        return Response(output)
