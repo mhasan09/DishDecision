@@ -93,14 +93,14 @@ class RefreshTokenAPIView(APIView):
     def decode_regnum_refresh_token(self):
         self.user_id = decode_refresh_token(**self.serializer_data)
         if not self.user_id:
-            return Response(status=status.HTTP_410_GONE)  # TODO: REFRESH_TOKEN_EXPIRED
+            return Response(status=status.HTTP_410_GONE)
 
         return None
 
     def check_regnum_user(self):
         self.user_obj = User.objects.filter(id=self.user_id).last()
         if not self.user_obj:
-            return Response(status=status.HTTP_424_FAILED_DEPENDENCY)  # TODO: TOKEN_AUTH_FAILED
+            return Response(status=status.HTTP_424_FAILED_DEPENDENCY)
 
         return None
 
