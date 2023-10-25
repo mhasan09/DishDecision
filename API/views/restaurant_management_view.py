@@ -115,12 +115,15 @@ class GetWinnerAPIView(APIView):
 
     def preprocess_winner_data(self):
         self.response_data = Vote.objects.get_winner()
-        winner_data = max(self.response_data, key=lambda d: d['total_vote_count'])
-        self.save_result(winner_data= winner_data)
-        menu_name = Menu.objects.get(id=winner_data["vote_for"]).menu
-        restaurant_name = Menu.objects.get(id=winner_data["vote_for"]).restaurant.name
-        location = Menu.objects.get(id=winner_data["vote_for"]).restaurant.location
-        return self.set_response(menu_name, restaurant_name, location)
+        if len(self.response_data) != 0:
+            winner_data = max(self.response_data, key=lambda d: d['total_vote_count'])
+            self.save_result(winner_data=winner_data)
+            menu_name = Menu.objects.get(id=winner_data["vote_for"]).menu
+            restaurant_name = Menu.objects.get(id=winner_data["vote_for"]).restaurant.name
+            location = Menu.objects.get(id=winner_data["vote_for"]).restaurant.location
+            return self.set_response(menu_name, restaurant_name, location)
+        return status.HTTP_406_NOT_ACCEPTABLE
+
 
     @staticmethod
     def save_result(winner_data):
