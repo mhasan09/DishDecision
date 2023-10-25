@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime, time, date, timedelta
 
 
 def string_to_datetime(datetime_string, format="%Y-%m-%d %H:%M:%S.%f"):
@@ -25,3 +25,14 @@ def check_time_limit_validity_for_voting():
     if morning <= current_time < noon:
         return True
     return False
+
+
+def get_three_consecutive_days():
+    today = date.today()
+
+    # Calculate the date for three days ago
+    three_days_ago = today - timedelta(days=3)
+
+    # Create a list of the last three consecutive days
+    consecutive_days = [three_days_ago + timedelta(days=i) for i in range(3)]
+    return consecutive_days
