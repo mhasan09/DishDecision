@@ -46,3 +46,25 @@ class MenuManager(models.Manager):
         except Exception as e:
             logger.debug(repr(e))
             return None
+
+    def get_eligible_menu_for_vote(self):
+        try:
+            return self.filter(
+                created_at__day=date.today().day
+            ).exists()
+
+        except Exception as e:
+            logger.debug(repr(e))
+            return None
+
+    def prepare_menu_vote(self, menu_id):
+        try:
+            return self.get(id=menu_id)
+
+        except ObjectDoesNotExist as e:
+            logger.debug({"menu_id": menu_id, "db_exception_error": repr(e)})
+            return None
+
+        except Exception as e:
+            logger.debug({"menu_id": menu_id, "db_exception_error": repr(e)})
+            return None
