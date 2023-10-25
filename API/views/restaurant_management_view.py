@@ -7,7 +7,10 @@ from applibs.helpers import check_time_limit_validity_for_uploading_menu
 from applibs.logging_utils import get_logger
 
 from API.models import Restaurant, Menu
-from API.serializers import CreateRestaurantSerializer, UploadMenuSerializer
+from API.serializers import (
+    CreateRestaurantSerializer,
+    UploadMenuSerializer,
+)
 
 logger = get_logger(__name__)
 

@@ -7,7 +7,10 @@ from applibs.helpers import check_time_limit_validity_for_voting
 from applibs.logging_utils import get_logger
 
 from API.models import Employee, Menu, Vote
-from API.serializers import CreateEmployeeSerializer, CastVoteSerializer
+from API.serializers import (
+    CreateEmployeeSerializer,
+    CastVoteSerializer,
+)
 
 logger = get_logger(__name__)
 
