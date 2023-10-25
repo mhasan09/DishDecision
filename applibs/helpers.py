@@ -19,11 +19,9 @@ def check_time_limit_validity_for_uploading_menu():
 
 def check_time_limit_validity_for_voting():
     current_time = datetime.now().time()
-    # Define the time ranges for midnight (12:00 AM) and 10:00 AM
-    midnight = time(10, 0)
-    ten_am = time(12, 0)
+    morning = time(10, 0)
+    noon = time(12, 0)
 
-    # Check if the current time is between midnight and 10:00 AM
-    if midnight <= current_time < ten_am:
+    if morning <= current_time < noon:
         return True
     return False
